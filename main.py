@@ -8,11 +8,11 @@ from dotenv import load_dotenv
 # Load environment variables from the .env file (for local development)
 load_dotenv()
 
-RAWG = os.getenv("RAWG")
-GROQ = os.getenv("GROQ")
+RAWG_API_KEY = os.getenv("RAWG_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # Groq client
-client = Groq(api_key=GROQ)
+client = Groq(api_key=GROQ_API_KEY)
 
 # Initialize your API app
 app = FastAPI()
@@ -28,7 +28,7 @@ def root():
 # Create an endpoint that listens for GET requests
 @app.get("/api/games")
 def get_games():
-    url = f"https://api.rawg.io/api/games?key={RAWG}"
+    url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}"
 
     # Make the GET request to RAWG
     response = requests.get(url)
