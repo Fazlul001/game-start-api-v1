@@ -1,16 +1,25 @@
 import os
-import requests
+import traceback
 from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+from groq import Groq
 from dotenv import load_dotenv
-
 # Load environment variables from the .env file (for local development)
 load_dotenv()
 
 # Fetch the API key from the environment
 RAWG_API_KEY = os.getenv("RAWG_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+# Groq client
+client = Groq(api_key=GROQ_API_KEY)
 
 # Initialize your API app
 app = FastAPI()
+
+class AIRecommendationRequest(BaseModel):
+    query: str
+    model: str = Field(default="llama-3.3-70b-versatile")
 
 @app.get("/")
 def root():
@@ -32,3 +41,37 @@ def get_games():
     else:
         # If RAWG is down or your key is wrong, return an error
         raise HTTPException(status_code=response.status_code, detail="Error fetching data from RAWG API")
+
+
+@app.post("/com.gamestart/v1/ai/recommendation")
+def aichat_recommendation(request_data: AIRecommendationRequest):
+    try:
+        # Call the Groq API
+        message = client.chat.completions.create(
+            model=request_data.model,
+            max_tokens=1024,
+            messages=[
+                {"role": "user", "content": request_data.query}
+            ]
+        )
+
+        response_text = message.choices[0].message.content
+
+        # FastAPI automatically converts dictionaries to JSON responses
+        return {
+            "success": True,
+            "query": request_data.query,
+            "response": response_text,
+            "model": request_data.model
+        }
+
+    except Exception as e:
+        # FastAPI's HTTPException replaces Django's JsonResponse for errors
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "Failed to process Groq request",
+                "details": str(e),
+                "traceback": traceback.format_exc()
+            }
+        )
