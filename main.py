@@ -1,6 +1,13 @@
-from fastapi import FastAPI, HTTPException
+import os
 import requests
+from fastapi import FastAPI, HTTPException
+from dotenv import load_dotenv
 
+# Load environment variables from the .env file (for local development)
+load_dotenv()
+
+# Fetch the API key from the environment
+RAWG_API_KEY = os.getenv("RAWG_API_KEY")
 
 # Initialize your API app
 app = FastAPI()
