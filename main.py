@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+import requests
+
 
 # Initialize your API app
 app = FastAPI()
@@ -10,8 +12,16 @@ def root():
 # Create an endpoint that listens for GET requests
 @app.get("/api/games")
 def get_games():
-    # When someone hits this URL, send back this JSON data
-    return {
-        "store": "Gamestart an E-commerce, Online platform for Game enthusiasts",
-        "inventory": ["Super Mario Odyssey", "Elden Ring", "Cyberpunk 2077"]
-    }
+    # The RAWG API URL, injecting your API key
+    url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}"
+
+    # Make the GET request to RAWG
+    response = requests.get(url)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Return the JSON data we got from RAWG straight to the user
+        return response.json()
+    else:
+        # If RAWG is down or your key is wrong, return an error
+        raise HTTPException(status_code=response.status_code, detail="Error fetching data from RAWG API")
