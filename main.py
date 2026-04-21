@@ -12,7 +12,7 @@ RAWG = os.getenv("RAWG")
 GROQ = os.getenv("GROQ")
 
 # Groq client
-client = Groq(GROQ)
+client = Groq(api_key=GROQ)
 
 # Initialize your API app
 app = FastAPI()
