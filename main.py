@@ -48,7 +48,7 @@ def aichat_recommendation(request_data: AIRecommendationRequest):
         message = client.chat.completions.create(
             model=request_data.model,
             max_tokens=1024,
-            messages=[
+            messages=[  # type: ignore
                 {"role": "user", "content": request_data.query}
             ]
         )
