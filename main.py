@@ -1,5 +1,6 @@
 import os
 import traceback
+import requests
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from groq import Groq
@@ -7,12 +8,11 @@ from dotenv import load_dotenv
 # Load environment variables from the .env file (for local development)
 load_dotenv()
 
-# Fetch the API key from the environment
-RAWG_API_KEY = os.getenv("RAWG")
-GROQ_API_KEY = os.getenv("GROQ")
+RAWG = os.getenv("RAWG")
+GROQ = os.getenv("GROQ")
 
 # Groq client
-client = Groq(api_key=GROQ_API_KEY)
+client = Groq(GROQ)
 
 # Initialize your API app
 app = FastAPI()
@@ -28,8 +28,7 @@ def root():
 # Create an endpoint that listens for GET requests
 @app.get("/api/games")
 def get_games():
-    # The RAWG API URL, injecting your API key
-    url = f"https://api.rawg.io/api/games?key={RAWG_API_KEY}"
+    url = f"https://api.rawg.io/api/games?key={RAWG}"
 
     # Make the GET request to RAWG
     response = requests.get(url)
@@ -39,7 +38,6 @@ def get_games():
         # Return the JSON data we got from RAWG straight to the user
         return response.json()
     else:
-        # If RAWG is down or your key is wrong, return an error
         raise HTTPException(status_code=response.status_code, detail="Error fetching data from RAWG API")
 
 
