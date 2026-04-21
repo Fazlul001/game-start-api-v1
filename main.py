@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Fetch the API key from the environment
-RAWG_API_KEY = os.getenv("RAWG_API_KEY")
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+RAWG_API_KEY = os.getenv("RAWG")
+GROQ_API_KEY = os.getenv("GROQ")
 
 # Groq client
 client = Groq(api_key=GROQ_API_KEY)
